@@ -2,11 +2,13 @@ package evolutionator
 
 import (
 	"fmt"
+	"math"
 	"math/rand"
 
 	"github.com/ajnavarro/code-empepinator/sandbox"
 
 	"github.com/MaxHalford/eaopt"
+	"github.com/jinzhu/copier"
 	"github.com/robertkrimen/otto/ast"
 )
 
@@ -25,15 +27,20 @@ type jsGenome struct {
 }
 
 func (g jsGenome) Evaluate() (float64, error) {
-	fmt.Println(g.ast)
 	j := sandbox.NewJavascript(g.name)
 	var out []float64
 	for _, p := range g.pairs {
 		v, err := j.ExecuteAST(g.ast, p.Input...)
 		if err != nil {
 			fmt.Println("ERROR EXECUTING AST", err.Error())
-			return 0, nil
+			return 10000, nil
 		}
+
+		if math.IsNaN(v) {
+			return 10000, nil
+		}
+
+		fmt.Println("GUT")
 		out = append(out, p.Output-v)
 	}
 
@@ -87,14 +94,13 @@ func (g jsGenome) Crossover(genome eaopt.Genome, rng *rand.Rand) {
 }
 
 func (g jsGenome) Clone() eaopt.Genome {
-	if g.ast == nil {
-		return jsGenome{}
+	dst := ast.Program{}
+	if err := copier.Copy(&dst, g.ast); err != nil {
+		panic(err)
 	}
-
-	ast := *g.ast
 	return jsGenome{
 		name:  g.name,
-		ast:   &ast,
+		ast:   &dst,
 		pairs: g.pairs,
 	}
 }

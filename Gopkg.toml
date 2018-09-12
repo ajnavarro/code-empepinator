@@ -40,3 +40,7 @@
 [[constraint]]
   name = "github.com/MaxHalford/eaopt"
   branch = "master"
+
+[[constraint]]
+  branch = "master"
+  name = "github.com/jinzhu/copier"
