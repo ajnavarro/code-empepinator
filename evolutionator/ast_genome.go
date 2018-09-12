@@ -66,6 +66,10 @@ func (g jsGenome) Crossover(genome eaopt.Genome, rng *rand.Rand) {
 }
 
 func (g jsGenome) Clone() eaopt.Genome {
+	if g.ast == nil {
+		return jsGenome{}
+	}
+
 	ast := *g.ast
 	return jsGenome{&ast}
 }
