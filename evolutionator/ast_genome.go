@@ -25,6 +25,7 @@ type jsGenome struct {
 }
 
 func (g jsGenome) Evaluate() (float64, error) {
+	fmt.Println(g.ast)
 	j := sandbox.NewJavascript(g.name)
 	var out []float64
 	for _, p := range g.pairs {
@@ -34,12 +35,9 @@ func (g jsGenome) Evaluate() (float64, error) {
 			return 0, nil
 		}
 		out = append(out, p.Output-v)
-		fmt.Println("DIFF PAIR", out)
 	}
 
-	// TODO
-
-	return 1, nil
+	return MSE(out), nil
 }
 
 func (g jsGenome) Mutate(rng *rand.Rand) {
