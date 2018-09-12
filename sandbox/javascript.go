@@ -25,6 +25,16 @@ func NewJavascript(name, function string) *Javascript {
 	}
 }
 
+func (e *Javascript) Parse() error {
+	ast, err := parser.ParseFile(nil, "", e.function, 0)
+	if err != nil {
+		return err
+	}
+
+	e.AST = ast
+	return nil
+}
+
 func (e *Javascript) Execute(vals ...float64) (float64, error) {
 	_, err := e.vm.Run(e.function)
 	if err != nil {
@@ -43,11 +53,10 @@ func (e *Javascript) Execute(vals ...float64) (float64, error) {
 		return 0, err
 	}
 
-	ast, err := parser.ParseFile(nil, "", e.function, 0)
+	err = e.Parse()
 	if err != nil {
 		return 0, err
 	}
-	e.AST = ast
 
 	return val.ToFloat()
 }
