@@ -5,6 +5,8 @@ import (
 	"math"
 	"math/rand"
 
+	"github.com/sanity-io/litter"
+
 	"github.com/ajnavarro/code-empepinator/sandbox"
 
 	"github.com/MaxHalford/eaopt"
@@ -37,14 +39,20 @@ func (g jsGenome) Evaluate() (float64, error) {
 		}
 
 		if math.IsNaN(v) {
+			//fmt.Println("IS NAN")
 			return 10000, nil
 		}
 
-		fmt.Println("GUT")
+		//fmt.Println("GUT")
 		out = append(out, p.Output-v)
 	}
 
-	return MSE(out), nil
+	mse := MSE(out)
+	length := float64(len(litter.Sdump(g.ast)))
+
+	fmt.Printf("mse %v; len %v\n", mse, length)
+
+	return (length + mse), nil
 }
 
 func (g jsGenome) Mutate(rng *rand.Rand) {

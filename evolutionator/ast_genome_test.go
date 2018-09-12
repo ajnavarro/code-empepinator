@@ -52,5 +52,17 @@ func TestCrossover(t *testing.T) {
 	//litter.Dump(g.ast.Body)
 	body := g.ast.Body[0].(*ast.FunctionStatement).Function.Body.(*ast.BlockStatement)
 	assert.Equal(t, 6, len(body.List))
+}
 
+func TestMutate(t *testing.T) {
+	g := parse(t, jscode)
+
+	s1 := litter.Sdump(g.ast)
+
+	r := rand.New(rand.NewSource(3))
+	g.Mutate(r)
+
+	s2 := litter.Sdump(g.ast)
+
+	assert.NotEqual(t, s1, s2)
 }

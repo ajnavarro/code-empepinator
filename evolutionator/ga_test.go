@@ -17,8 +17,9 @@ const name = "multiply"
 var function = `
 function multiply(p1,p2) {
     var a = p1;
-	var b = p2;
-    var result = a * b;
+		var b = p2;
+		var c = p1 + p1 - p1;
+    var result = a * b * c;
 
     return result;
 }`

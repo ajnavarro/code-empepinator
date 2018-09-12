@@ -24,6 +24,9 @@ func MakeJSGenome(ast *ast.Program, pairs []*Pair, name string) func(rng *rand.R
 func Optimize(ast *ast.Program, pairs []*Pair, name string) (*ast.Program, error) {
 	var conf = eaopt.NewDefaultGAConfig()
 	conf.NPops = 1
+	conf.PopSize = 100
+	conf.NGenerations = 1000
+
 	var ga, err = conf.NewGA()
 	if err != nil {
 		return nil, err
