@@ -8,8 +8,13 @@ import (
 	"github.com/robertkrimen/otto/ast"
 )
 
-func MakeJSGenome(rng *rand.Rand) eaopt.Genome {
-	return jsGenome{}
+// MakeJSGenome ignores the random initialization, all individuals are
+// clones of the first parsed AST
+func MakeJSGenome(ast *ast.Program) func(rng *rand.Rand) eaopt.Genome {
+	return func(rng *rand.Rand) eaopt.Genome {
+		g := jsGenome{ast}
+		return g.Clone()
+	}
 }
 
 func Optimize(ast *ast.Program) (*ast.Program, error) {
@@ -26,7 +31,7 @@ func Optimize(ast *ast.Program) (*ast.Program, error) {
 	}
 
 	// Run the GA
-	err = ga.Minimize(MakeJSGenome)
+	err = ga.Minimize(MakeJSGenome(ast))
 	if err != nil {
 		return nil, err
 	}

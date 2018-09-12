@@ -3,15 +3,18 @@ package evolutionator
 import (
 	"testing"
 
-	"github.com/robertkrimen/otto/ast"
+	"github.com/ajnavarro/code-empepinator/sandbox"
+
 	"github.com/sanity-io/litter"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestEvolutionator(t *testing.T) {
-	var ast *ast.Program
+	executor := sandbox.NewJavascript("multiply", jscode)
+	err := executor.Parse()
+	assert.NoError(t, err)
 
-	res, err := Optimize(ast)
+	res, err := Optimize(executor.AST)
 
 	assert.NoError(t, err)
 	litter.Dump(res)
