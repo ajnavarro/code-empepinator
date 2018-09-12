@@ -20,7 +20,7 @@ func (g jsGenome) Evaluate() (float64, error) {
 }
 
 func (g jsGenome) Mutate(rng *rand.Rand) {
-	// TODO
+	NewMutator(rng).Mutate(g.ast)
 }
 
 func (g jsGenome) Crossover(genome eaopt.Genome, rng *rand.Rand) {
@@ -28,6 +28,6 @@ func (g jsGenome) Crossover(genome eaopt.Genome, rng *rand.Rand) {
 }
 
 func (g jsGenome) Clone() eaopt.Genome {
-	// TODO: deep copy
-	return jsGenome{g.ast}
+	ast := *g.ast
+	return jsGenome{&ast}
 }

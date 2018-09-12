@@ -18,6 +18,10 @@ func NewMutator(rand *rand.Rand) *Mutator {
 }
 
 func (e *Mutator) Mutate(a *ast.Program) *ast.Program {
+	if a == nil {
+		return nil
+	}
+
 	for i, b := range a.Body {
 		a.Body[i] = e.evalStatement(b)
 	}
