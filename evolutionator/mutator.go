@@ -8,14 +8,12 @@ import (
 
 type Mutator struct {
 	rand *rand.Rand
-
-	ids map[string]*ast.Identifier
+	ids  []*ast.Identifier
 }
 
 func NewMutator(rand *rand.Rand) *Mutator {
 	return &Mutator{
 		rand: rand,
-		ids:  make(map[string]*ast.Identifier),
 	}
 }
 
@@ -32,15 +30,23 @@ func (e *Mutator) evalStatement(stat ast.Statement) ast.Statement {
 	case *ast.FunctionStatement:
 		t.Function.Body = e.evalStatement(t.Function.Body)
 	case *ast.BlockStatement:
-		for i, s := range t.List {
-			t.List[i] = e.evalStatement(s)
+		var outList []ast.Statement
+		for _, s := range t.List {
+			if e.hit(3) {
+				outList = append(outList, e.evalStatement(s))
+			}
 		}
+		t.List = outList
 	case *ast.ReturnStatement:
 		t.Argument = e.evalExpression(t.Argument)
 	case *ast.VariableStatement:
+		var outList []ast.Expression
 		for i, ex := range t.List {
-			t.List[i] = e.evalExpression(ex)
+			if e.hit(2) {
+				t.List[i] = e.evalExpression(ex)
+			}
 		}
+		t.List = outList
 	default:
 		println(t)
 		panic("STATEMENT NOT FOUND")
@@ -52,14 +58,33 @@ func (e *Mutator) evalStatement(stat ast.Statement) ast.Statement {
 func (e *Mutator) evalExpression(expr ast.Expression) ast.Expression {
 	switch t := expr.(type) {
 	case *ast.BinaryExpression:
-		t.Left = e.evalExpression(t.Left)
-		t.Right = e.evalExpression(t.Right)
+		if e.hit(3) {
+			t.Left = e.evalExpression(t.Left)
+		}
+
+		if e.hit(3) {
+			t.Right = e.evalExpression(t.Right)
+		}
 	case *ast.UnaryExpression:
-		t.Operand = e.evalExpression(t.Operand)
+		if e.hit(3) {
+			t.Operand = e.evalExpression(t.Operand)
+			break
+		}
 	case *ast.VariableExpression:
 		t.Initializer = e.evalExpression(t.Initializer)
 	case *ast.Identifier:
-		e.ids[t.Name] = t
+		if e.hit(3) {
+			switch len(e.ids) {
+			case 1:
+				expr = e.ids[0]
+			case 0:
+				break
+			default:
+				expr = e.ids[e.rand.Intn(len(e.ids)-1)]
+			}
+		}
+
+		e.ids = append(e.ids, t)
 	default:
 		panic(t)
 	}

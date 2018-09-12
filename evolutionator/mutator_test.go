@@ -12,7 +12,7 @@ import (
 
 func TestAST(t *testing.T) {
 	require := require.New(t)
-	m := NewMutator(rand.New(rand.NewSource(23)))
+	m := NewMutator(rand.New(rand.NewSource(42)))
 
 	content := `function multiply(p1,p2) {
 		var a = p1;
@@ -27,7 +27,9 @@ func TestAST(t *testing.T) {
 	require.NoError(err)
 	require.Equal(float64(4), result)
 
+	prevAst := *executor.AST
 	ast := m.Mutate(executor.AST)
 
+	require.NotEqual(prevAst, ast)
 	litter.Dump(ast)
 }
