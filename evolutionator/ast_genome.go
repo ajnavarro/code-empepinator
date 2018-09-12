@@ -1,21 +1,44 @@
 package evolutionator
 
 import (
+	"fmt"
 	"math/rand"
+
+	"github.com/ajnavarro/code-empepinator/sandbox"
 
 	"github.com/MaxHalford/eaopt"
 	"github.com/robertkrimen/otto/ast"
 )
 
+type Pair struct {
+	Input  []float64
+	Output float64
+}
+
 var _ eaopt.Genome = jsGenome{}
 
 // See https://github.com/MaxHalford/eaopt#implementing-the-genome-interface
 type jsGenome struct {
-	ast *ast.Program
+	name  string
+	ast   *ast.Program
+	pairs []*Pair
 }
 
 func (g jsGenome) Evaluate() (float64, error) {
+	j := sandbox.NewJavascript(g.name)
+	var out []float64
+	for _, p := range g.pairs {
+		v, err := j.ExecuteAST(g.ast, p.Input...)
+		if err != nil {
+			fmt.Println("ERROR EXECUTING AST", err.Error())
+			return 0, nil
+		}
+		out = append(out, p.Output-v)
+		fmt.Println("DIFF PAIR", out)
+	}
+
 	// TODO
+
 	return 1, nil
 }
 
@@ -71,5 +94,9 @@ func (g jsGenome) Clone() eaopt.Genome {
 	}
 
 	ast := *g.ast
-	return jsGenome{&ast}
+	return jsGenome{
+		name:  g.name,
+		ast:   &ast,
+		pairs: g.pairs,
+	}
 }

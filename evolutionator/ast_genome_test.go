@@ -31,8 +31,8 @@ function multiply(p1,p2) {
 }`
 
 func parse(t *testing.T, code string) jsGenome {
-	executor := sandbox.NewJavascript("multiply", code)
-	err := executor.Parse()
+	executor := sandbox.NewJavascript("multiply")
+	err := executor.Parse(code)
 	assert.NoError(t, err)
 
 	return jsGenome{ast: executor.AST}

@@ -16,9 +16,9 @@ func TestAST(t *testing.T) {
 function multiply(a,b) {
 	return a*b;
 }`
-	executor := NewJavascript("multiply", content)
+	executor := NewJavascript("multiply")
 
-	result, err := executor.Execute(2, 2)
+	result, err := executor.Execute(content, 2, 2)
 	require.NoError(err)
 	require.Equal(float64(4), result)
 
@@ -37,9 +37,9 @@ func TestExecutor(t *testing.T) {
 function multiply(a,b) {
 	return a*b;
 }`
-	executor := NewJavascript("multiply", content)
+	executor := NewJavascript("multiply")
 
-	result, err := executor.Execute(2, 2)
+	result, err := executor.Execute(content, 2, 2)
 
 	require.NoError(err)
 	require.Equal(float64(4), result)
@@ -52,9 +52,9 @@ func TestExecutorBadParameters(t *testing.T) {
 function multiply(a,b) {
 	return a*b;
 }`
-	executor := NewJavascript("multiply", content)
+	executor := NewJavascript("multiply")
 
-	result, err := executor.Execute(2)
+	result, err := executor.Execute(content, 2)
 	require.NoError(err)
 	require.True(math.IsNaN(result))
 }
@@ -66,8 +66,8 @@ func TestExecutorBadCode(t *testing.T) {
 function multiply(a,b) {
 	BADCODE
 }`
-	executor := NewJavascript("multiply", content)
+	executor := NewJavascript("multiply")
 
-	_, err := executor.Execute(2)
+	_, err := executor.Execute(content, 2)
 	require.Error(err)
 }

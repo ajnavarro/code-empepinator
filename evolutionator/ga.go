@@ -10,14 +10,18 @@ import (
 
 // MakeJSGenome ignores the random initialization, all individuals are
 // clones of the first parsed AST
-func MakeJSGenome(ast *ast.Program) func(rng *rand.Rand) eaopt.Genome {
+func MakeJSGenome(ast *ast.Program, pairs []*Pair, name string) func(rng *rand.Rand) eaopt.Genome {
 	return func(rng *rand.Rand) eaopt.Genome {
-		g := jsGenome{ast}
+		g := jsGenome{
+			ast:   ast,
+			pairs: pairs,
+			name:  name,
+		}
 		return g.Clone()
 	}
 }
 
-func Optimize(ast *ast.Program) (*ast.Program, error) {
+func Optimize(ast *ast.Program, pairs []*Pair, name string) (*ast.Program, error) {
 	var conf = eaopt.NewDefaultGAConfig()
 	conf.NPops = 1
 	var ga, err = conf.NewGA()
@@ -31,7 +35,7 @@ func Optimize(ast *ast.Program) (*ast.Program, error) {
 	}
 
 	// Run the GA
-	err = ga.Minimize(MakeJSGenome(ast))
+	err = ga.Minimize(MakeJSGenome(ast, pairs, name))
 	if err != nil {
 		return nil, err
 	}

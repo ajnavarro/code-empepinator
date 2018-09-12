@@ -10,23 +10,20 @@ import (
 )
 
 type Javascript struct {
-	name, function string
-
-	vm *otto.Otto
-
-	AST *ast.Program
+	name string
+	vm   *otto.Otto
+	AST  *ast.Program
 }
 
-func NewJavascript(name, function string) *Javascript {
+func NewJavascript(name string) *Javascript {
 	return &Javascript{
-		vm:       otto.New(),
-		name:     name,
-		function: function,
+		vm:   otto.New(),
+		name: name,
 	}
 }
 
-func (e *Javascript) Parse() error {
-	ast, err := parser.ParseFile(nil, "", e.function, 0)
+func (e *Javascript) Parse(function string) error {
+	ast, err := parser.ParseFile(nil, "", function, 0)
 	if err != nil {
 		return err
 	}
@@ -35,8 +32,8 @@ func (e *Javascript) Parse() error {
 	return nil
 }
 
-func (e *Javascript) Execute(vals ...float64) (float64, error) {
-	_, err := e.vm.Run(e.function)
+func (e *Javascript) Execute(function string, vals ...float64) (float64, error) {
+	_, err := e.vm.Run(function)
 	if err != nil {
 		return 0, err
 	}
@@ -53,8 +50,7 @@ func (e *Javascript) Execute(vals ...float64) (float64, error) {
 		return 0, err
 	}
 
-	err = e.Parse()
-	if err != nil {
+	if err := e.Parse(function); err != nil {
 		return 0, err
 	}
 

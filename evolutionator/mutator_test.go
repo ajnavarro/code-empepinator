@@ -21,9 +21,9 @@ func TestAST(t *testing.T) {
 
 		return result;
 	}`
-	executor := sandbox.NewJavascript("multiply", content)
+	executor := sandbox.NewJavascript("multiply")
 
-	result, err := executor.Execute(2, 2)
+	result, err := executor.Execute(content, 2, 2)
 	require.NoError(err)
 	require.Equal(float64(4), result)
 
