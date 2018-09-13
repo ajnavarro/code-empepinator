@@ -35,15 +35,13 @@ func (g jsGenome) Evaluate() (float64, error) {
 		v, err := j.ExecuteAST(g.ast, p.Input...)
 		if err != nil {
 			fmt.Println("ERROR EXECUTING AST", err.Error())
-			return 10000, nil
+			return 1000000, nil
 		}
 
 		if math.IsNaN(v) {
-			//fmt.Println("IS NAN")
 			return 10000, nil
 		}
 
-		//fmt.Println("GUT")
 		out = append(out, p.Output-v)
 	}
 
@@ -56,7 +54,7 @@ func (g jsGenome) Evaluate() (float64, error) {
 }
 
 func (g jsGenome) Mutate(rng *rand.Rand) {
-	NewMutator(rng).Mutate(g.ast)
+	g.ast = NewMutator(rng).Mutate(g.ast)
 }
 
 func (g jsGenome) Crossover(genome eaopt.Genome, rng *rand.Rand) {

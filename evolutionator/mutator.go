@@ -32,24 +32,29 @@ func (e *Mutator) Mutate(a *ast.Program) *ast.Program {
 func (e *Mutator) evalStatement(stat ast.Statement) ast.Statement {
 	switch t := stat.(type) {
 	case *ast.FunctionStatement:
-		t.Function.Body = e.evalStatement(t.Function.Body)
+		if e.hit(3) {
+			t.Function.Body = e.evalStatement(t.Function.Body)
+		}
 	case *ast.BlockStatement:
 		var outList []ast.Statement
 		for _, s := range t.List {
-			if e.hit(3) {
+			if !e.hit(5) {
 				outList = append(outList, e.evalStatement(s))
 			}
 		}
 		t.List = outList
 	case *ast.ReturnStatement:
-		t.Argument = e.evalExpression(t.Argument)
+		if e.hit(3) {
+			t.Argument = e.evalExpression(t.Argument)
+		}
 	case *ast.VariableStatement:
 		var outList []ast.Expression
-		for i, ex := range t.List {
-			if e.hit(2) {
-				t.List[i] = e.evalExpression(ex)
+		for _, ex := range t.List {
+			if !e.hit(5) {
+				outList = append(outList, e.evalExpression(ex))
 			}
 		}
+
 		t.List = outList
 	default:
 		println(t)
@@ -72,7 +77,6 @@ func (e *Mutator) evalExpression(expr ast.Expression) ast.Expression {
 	case *ast.UnaryExpression:
 		if e.hit(3) {
 			t.Operand = e.evalExpression(t.Operand)
-			break
 		}
 	case *ast.VariableExpression:
 		t.Initializer = e.evalExpression(t.Initializer)
